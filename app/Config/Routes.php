@@ -49,3 +49,8 @@ $routes->post('operation/transfert', 'OperationController::transfert');
 
 // Historique
 $routes->get('client/historique', 'ClientController::historique');
+
+// API
+$routes->post('api/calculer-frais-retrait', 'ApiController::calculerFraisRetrait');
+$routes->post('api/calculer-frais-transfert', 'ApiController::calculerFraisTransfert');
+
