@@ -92,13 +92,13 @@ CREATE TABLE gain (
     id_transfert INT NULL,
     id_retrait INT NULL,
     montant_gain DECIMAL(10,2),
-    type_gain INT NOT NULL,
+    id_type_gain INT NOT NULL,
     id_operateur_concerne INT NULL, -- Utile pour savoir quel opérateur a généré le gain
     date_gain DATETIME,
     FOREIGN KEY (id_operation) REFERENCES operation(id_operation),
     FOREIGN KEY (id_transfert) REFERENCES transfert(id_transfert),
     FOREIGN KEY (id_retrait) REFERENCES retrait(id_retrait),
-    FOREIGN KEY (type_gain) REFERENCES type_gain(id),
+    FOREIGN KEY (id_type_gain) REFERENCES type_gain(id),
     FOREIGN KEY (id_operateur_concerne) REFERENCES Operateur(id)
 );
 
