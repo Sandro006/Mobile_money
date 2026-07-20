@@ -1,9 +1,18 @@
 
 PRAGMA foreign_keys = ON;
 
+CREATE TABLE Operateur(
+    id INT PRIMARY KEY,
+    nom VARCHAR(50),
+    mdp VARCHAR(100),
+    UNIQUE(nom)
+);
+
 CREATE TABLE prefixe (
     id_prefixe INT PRIMARY KEY,
-    num_prefixe VARCHAR(10)
+    num_prefixe VARCHAR(10),
+    id_operateur INT,
+    FOREIGN KEY (id_operateur) REFERENCES Operateur(id)
 );
 
 CREATE TABLE operation (
@@ -11,14 +20,18 @@ CREATE TABLE operation (
     description_operation VARCHAR(100)
 );
 
+-- Si vous recréez la table, ajoutez la clé étrangère id_operateur :
 CREATE TABLE utilisateur (
     id_utilisateur INT PRIMARY KEY,
     nom_utilisateur VARCHAR(50),
     numero_utilisateur VARCHAR(20),
     id_prefixe INT,
+    id_operateur INT, -- Ajout essentiel pour identifier l'opérateur du client
     solde_utilisateur DECIMAL(10,2),
-    FOREIGN KEY (id_prefixe) REFERENCES prefixe(id_prefixe)
+    FOREIGN KEY (id_prefixe) REFERENCES prefixe(id_prefixe),
+    FOREIGN KEY (id_operateur) REFERENCES Operateur(id)
 );
+
 
 CREATE TABLE transfert (
     id_transfert INT PRIMARY KEY,
@@ -69,17 +82,32 @@ CREATE TABLE frais (
     FOREIGN KEY (id_bareme) REFERENCES bareme(id_bareme)
 );
 
+CREATE TABLE type_gain(
+    id INT PRIMARY KEY,
+    libelle VARCHAR(50)  -- 'Interne' ou 'Inter-Operateur'
+)
 CREATE TABLE gain (
     id_gain INT PRIMARY KEY,
     id_operation INT,
     id_transfert INT NULL,
     id_retrait INT NULL,
     montant_gain DECIMAL(10,2),
+    type_gain INT NOT NULL,
+    id_operateur_concerne INT NULL, -- Utile pour savoir quel opérateur a généré le gain
     date_gain DATETIME,
     FOREIGN KEY (id_operation) REFERENCES operation(id_operation),
     FOREIGN KEY (id_transfert) REFERENCES transfert(id_transfert),
-    FOREIGN KEY (id_retrait) REFERENCES retrait(id_retrait)
+    FOREIGN KEY (id_retrait) REFERENCES retrait(id_retrait),
+    FOREIGN KEY (type_gain) REFERENCES type_gain(id),
+    FOREIGN KEY (id_operateur_concerne) REFERENCES Operateur(id)
 );
+
+CREATE TABLE configuration_interop (
+    id_config INT PRIMARY KEY,
+    id_operateur INT,
+    taux_commission_autre_operateur DECIMAL(5,2) DEFAULT 0.00 -- Stocke le %, ex: 2.50 pour 2.5%
+);
+
 
 -- ================================= VUE ========================================
 CREATE VIEW vue_historique_operations AS
