@@ -181,7 +181,11 @@ INSERT INTO prefixe (id_prefixe, num_prefixe) VALUES
 (1, '033'),
 (2, '037');
 UPDATE prefixe SET id_operateur = 1 WHERE id_prefixe = 1;
-UPDATE prefixe SET id_operateur = 2 WHERE id_prefixe = 2;
+UPDATE prefixe SET id_operateur = 1 WHERE id_prefixe = 1;
+
+INSERT INTO prefixe(id_prefixe, num_prefixe, id_operateur) VALUES
+(3, '034',2),
+(4,'038',2)
 -- Insertion des types de gains
 INSERT INTO type_gain(id, libelle) VALUES 
 (1, 'Interne'),
