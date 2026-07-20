@@ -24,7 +24,6 @@ class CompensationController extends BaseController
 
     public function index()
     {
-        // Vérifier que l'opérateur est connecté (administrateur)
         $idOperateur = session()->get('operateur_id');
         if (!$idOperateur) {
             return redirect()->to('/operateur/auth')->with('error', 'Veuillez vous connecter.');
@@ -32,7 +31,6 @@ class CompensationController extends BaseController
 
         $db = \Config\Database::connect();
 
-        // ---- Requête pour calculer les montants envoyés et reçus par opérateur ----
         $sql = "
             SELECT 
                 op.id AS id_operateur,
