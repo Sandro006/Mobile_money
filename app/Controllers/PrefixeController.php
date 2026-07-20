@@ -14,26 +14,20 @@ class PrefixeController extends BaseController
         $this->prefixeModel = new PrefixeModel();
     }
 
-    /**
-     * Affiche la liste des préfixes.
-     */
+   
     public function index()
     {
         $data['prefixes'] = $this->prefixeModel->findAll();
         return view('operateur/prefixe/index', $data);
     }
 
-    /**
-     * Affiche le formulaire de création.
-     */
+  
     public function create()
     {
         return view('operateur/prefixe/create');
     }
 
-    /**
-     * Enregistre un nouveau préfixe.
-     */
+   
     public function store()
     {
         $rules = [
@@ -51,9 +45,7 @@ class PrefixeController extends BaseController
         return redirect()->to('/prefixe')->with('success', 'Préfixe ajouté avec succès.');
     }
 
-    /**
-     * Affiche un préfixe spécifique (détail).
-     */
+ 
     public function show($id)
     {
         $data['prefixe'] = $this->prefixeModel->find($id);
@@ -63,9 +55,7 @@ class PrefixeController extends BaseController
         return view('operateur/prefixe/show', $data);
     }
 
-    /**
-     * Affiche le formulaire d'édition.
-     */
+   
     public function edit($id)
     {
         $data['prefixe'] = $this->prefixeModel->find($id);
@@ -75,9 +65,7 @@ class PrefixeController extends BaseController
         return view('operateur/prefixe/edit', $data);
     }
 
-    /**
-     * Met à jour un préfixe.
-     */
+   
     public function update($id)
     {
         $rules = [
@@ -95,9 +83,7 @@ class PrefixeController extends BaseController
         return redirect()->to('/prefixe')->with('success', 'Préfixe mis à jour avec succès.');
     }
 
-    /**
-     * Supprime un préfixe.
-     */
+
     public function delete($id)
     {
         $prefixe = $this->prefixeModel->find($id);

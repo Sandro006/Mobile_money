@@ -1,6 +1,9 @@
 <?php
 use App\Controllers\PrefixeController;
 use CodeIgniter\Router\RouteCollection;
+use App\Controllers\BaremeController;
+use App\Controllers\GainController;
+use App\Controllers\SituationController;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
@@ -12,3 +15,13 @@ $routes->get('/prefixe/show/(:num)', [PrefixeController::class, 'show']);
 $routes->get('/prefixe/edit/(:num)', [PrefixeController::class, 'edit']);
 $routes->post('/prefixe/update/(:num)', [PrefixeController::class, 'update']);
 $routes->post('/prefixe/delete/(:num)', [PrefixeController::class, 'delete']);
+
+$routes->get('/bareme', [BaremeController::class, 'index']);
+$routes->get('/bareme/edit/(:num)', [BaremeController::class, 'edit']);
+$routes->post('/bareme/update/(:num)', [BaremeController::class, 'update']);
+
+$routes->get('/gain', [GainController::class, 'index']);
+
+
+$routes->get('/situation', [SituationController::class, 'index']);
+$routes->get('/situation/detail/(:num)', [SituationController::class, 'detail']);
