@@ -4,6 +4,8 @@ use CodeIgniter\Router\RouteCollection;
 use App\Controllers\BaremeController;
 use App\Controllers\GainController;
 use App\Controllers\SituationController;
+use App\Controllers\CommissionController;
+use App\Controllers\CompensationController;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
@@ -50,7 +52,12 @@ $routes->post('operation/transfert', 'OperationController::transfert');
 // Historique
 $routes->get('client/historique', 'ClientController::historique');
 
-// API
-$routes->post('api/calculer-frais-retrait', 'ApiController::calculerFraisRetrait');
-$routes->post('api/calculer-frais-transfert', 'ApiController::calculerFraisTransfert');
+// Authentification Opérateur
+$routes->get('operateur/auth', 'OperateurAuthController::index');
+$routes->post('operateur/auth', 'OperateurAuthController::login');
+$routes->get('operateur/logout', 'OperateurAuthController::logout');
 
+$routes->get('/commission', [CommissionController::class, 'index']);
+$routes->post('/commission/update', [CommissionController::class, 'update']);
+
+$routes->get('/compensation', [CompensationController::class, 'index']);

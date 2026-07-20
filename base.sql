@@ -235,3 +235,4 @@ UPDATE utilisateur SET id_operateur = 2 WHERE id_utilisateur = 2; -- Rabe Rado c
 
  INSERT INTO utilisateur (id_utilisateur, nom_utilisateur, numero_utilisateur, id_operateur, solde_utilisateur) VALUES (4, 'Jean bae', '0331234570', 1, 20000.00);
 
+ALTER TABLE operateur ADD COLUMN commission_pourcent DECIMAL(5,2) DEFAULT 0.00

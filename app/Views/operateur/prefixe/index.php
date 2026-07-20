@@ -15,6 +15,7 @@
     <?= view('layouts/navbar') ?>
     <div class="container mt-4">
         <h1 class="mb-4">Liste des préfixes</h1>
+      <?php print_r(session()->get()); ?>
 
         <?php if (session()->getFlashdata('success')) : ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">

@@ -23,8 +23,7 @@
                         <th>ID</th>
                         <th>Nom</th>
                         <th>Numéro</th>
-                        <th>Préfixe</th>
-                        <th>Solde (€)</th>
+                        <th>Solde </th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -35,7 +34,6 @@
                                 <td><?= $u['id_utilisateur'] ?></td>
                                 <td><?= esc($u['nom_utilisateur']) ?></td>
                                 <td><?= esc($u['numero_utilisateur']) ?></td>
-                                <td><?= esc($u['id_prefixe']) ?></td>
                                 <td><?= number_format($u['solde_utilisateur'], 2, ',', ' ') ?></td>
                                 <td>
                                     <a href="<?= site_url('situation/detail/' . $u['id_utilisateur']) ?>" class="btn btn-sm btn-info">Voir détails</a>

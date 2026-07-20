@@ -35,7 +35,7 @@
                     </a>
                     
                     <!-- Bouton Espace Opérateur -->
-                    <a href="/prefixe" class="btn btn-dark btn-lg p-3 fw-bold text-start d-flex align-items-center justify-content-between">
+                    <a href="/operateur/auth" class="btn btn-dark btn-lg p-3 fw-bold text-start d-flex align-items-center justify-content-between">
                         <div>
                             <i class="bi bi-gear-fill me-3 fs-4 text-warning"></i>
                             <span>Configuration Opérateur</span>

@@ -9,7 +9,10 @@ class OperateurAuthController extends Controller
 {
     public function index()
     {
+<<<<<<< HEAD
+=======
         // Si déjà connecté, on redirige directement
+>>>>>>> origin/v2
         if (session()->get('isOperateurLoggedIn')) {
             return redirect()->to('/prefixe');
         }
@@ -36,15 +39,21 @@ class OperateurAuthController extends Controller
         $operateurModel = new OperateurModel();
         $operateur = $operateurModel->where('nom', $nom)->first();
 
+<<<<<<< HEAD
+=======
         // NOTE: le mdp est en clair dans vos données de test.
         // En production, stockez un hash (password_hash) et vérifiez avec password_verify().
+>>>>>>> origin/v2
         if (! $operateur || $operateur['mdp'] !== $mdp) {
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Nom ou mot de passe incorrect.');
         }
 
+<<<<<<< HEAD
+=======
         // Stockage de l'opérateur en session
+>>>>>>> origin/v2
         session()->set([
             'operateur_id'      => $operateur['id'],
             'operateur_nom'     => $operateur['nom'],
