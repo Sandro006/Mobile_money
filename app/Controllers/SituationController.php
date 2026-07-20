@@ -22,16 +22,33 @@ class SituationController extends BaseController
         $this->depotModel       = new DepotModel();
     }
 
-    /**
-     * Liste des utilisateurs avec solde
-     */
+
     public function index()
     {
-        $utilisateurs = $this->utilisateurModel->findAll();
+        $idOperateur = session()->get('operateur_id');
+        if (!$idOperateur) {
+            return redirect()->to('/operateur/auth')->with('error', 'Veuillez vous connecter en tant qu\'opérateur.');
+        }
+    
+        $db = \Config\Database::connect();
+        $prefixes = $db->table('prefixe')
+                       ->where('id_operateur', $idOperateur)
+                       ->get()
+                       ->getResultArray();
+    
+        $listeIdsPrefixes = array_column($prefixes, 'id_prefixe');
+    
+        if (empty($listeIdsPrefixes)) {
+            $utilisateurs = [];
+        } else {
+            $utilisateurs = $this->utilisateurModel
+                                 ->whereIn('id_prefixe', $listeIdsPrefixes)
+                                 ->findAll();
+        }
+    
         $data['utilisateurs'] = $utilisateurs;
         return view('operateur/situation/index', $data);
     }
-
     /**
      * Détail des transactions d'un utilisateur
      */

@@ -49,3 +49,8 @@ $routes->post('operation/transfert', 'OperationController::transfert');
 
 // Historique
 $routes->get('client/historique', 'ClientController::historique');
+
+// Authentification Opérateur
+$routes->get('operateur/auth', 'OperateurAuthController::index');
+$routes->post('operateur/auth', 'OperateurAuthController::login');
+$routes->get('operateur/logout', 'OperateurAuthController::logout');

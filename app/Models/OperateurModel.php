@@ -10,5 +10,5 @@ class OperateurModel extends Model
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
-    protected $allowedFields    = ['id', 'nom'];
+    protected $allowedFields = ['id', 'libelle', 'nom', 'mdp'];
 }
