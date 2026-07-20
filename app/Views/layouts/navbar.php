@@ -21,6 +21,9 @@
                 <li class="nav-item">
             <a class="nav-link" href="<?= site_url('commission') ?>">Commission </a>
                 </li>
+                <li class="nav-item">
+    <a class="nav-link" href="<?= site_url('compensation') ?>">Compensation</a>
+</li>
             </ul>
         </div>
     </div>

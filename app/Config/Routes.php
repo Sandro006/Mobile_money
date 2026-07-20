@@ -5,6 +5,7 @@ use App\Controllers\BaremeController;
 use App\Controllers\GainController;
 use App\Controllers\SituationController;
 use App\Controllers\CommissionController;
+use App\Controllers\CompensationController;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
@@ -58,3 +59,5 @@ $routes->get('operateur/logout', 'OperateurAuthController::logout');
 
 $routes->get('/commission', [CommissionController::class, 'index']);
 $routes->post('/commission/update', [CommissionController::class, 'update']);
+
+$routes->get('/compensation', [CompensationController::class, 'index']);
