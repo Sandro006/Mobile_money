@@ -13,6 +13,8 @@ class GainModel extends Model
         'id_transfert',
         'id_retrait',
         'montant_gain',
+        'type_gain',
+        'id_operateur_concerne',
         'date_gain'
     ];
 }
