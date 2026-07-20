@@ -1,3 +1,6 @@
+
+PRAGMA foreign_keys = ON;
+
 CREATE TABLE prefixe (
     id_prefixe INT PRIMARY KEY,
     num_prefixe VARCHAR(10)
@@ -77,3 +80,62 @@ CREATE TABLE gain (
     FOREIGN KEY (id_transfert) REFERENCES transfert(id_transfert),
     FOREIGN KEY (id_retrait) REFERENCES retrait(id_retrait)
 );
+
+
+-- =============================== DONNÉES DE TEST ===============================
+-- Types d'opérations
+INSERT INTO operation (id_operation, description_operation) VALUES
+(1, 'Transfert'),
+(2, 'Dépôt'),
+(3, 'Retrait');
+
+-- Préfixes d'opérateurs
+INSERT INTO prefixe (id_prefixe, num_prefixe) VALUES
+(1, '032'),
+(2, '033'),
+(3, '034'),
+(4, '037');
+
+-- Insertion du barème (Table bareme)
+INSERT INTO bareme (id_bareme, min_bareme, max_bareme) VALUES
+(1, 100.00, 1000.00),
+(2, 1001.00, 5000.00),
+(3, 5001.00, 10000.00),
+(4, 10001.00, 25000.00),
+(5, 25001.00, 50000.00),
+(6, 50001.00, 100000.00),
+(7, 100001.00, 250000.00),
+(8, 250001.00, 500000.00),
+(9, 500001.00, 1000000.00),
+(10, 1000001.00, 2000000.00);
+
+-- Insertion des frais associés (Table frais avec DATETIME('now'))
+INSERT INTO frais (id_frais, id_bareme, montant_frais, date_frais) VALUES
+(1, 1, 50.00, DATETIME('now')),
+(2, 2, 50.00, DATETIME('now')),
+(3, 3, 100.00, DATETIME('now')),
+(4, 4, 200.00, DATETIME('now')),
+(5, 5, 400.00, DATETIME('now')),
+(6, 6, 800.00, DATETIME('now')),
+(7, 7, 1500.00, DATETIME('now')),
+(8, 8, 1500.00, DATETIME('now')),
+(9, 9, 2500.00, DATETIME('now')),
+(10, 10, 3000.00, DATETIME('now'));
+
+-- Utilisateurs de test
+INSERT INTO utilisateur (id_utilisateur, nom_utilisateur, numero_utilisateur, id_prefixe, solde_utilisateur) VALUES
+(1, 'Jean Rabe', '0331234567', 2, 50000.00),
+(2, 'Alice Ranaivo', '0347654321', 3, 5000.00),
+(3, 'Michel Toky', '0320011223', 1, 150000.00);
+
+-- Exemple de dépôt
+INSERT INTO depot (id_depot, id_operation, id_utilisateur_depot, montant_depot, date_depot, lieu_depot) VALUES
+(1, 2, 1, 20000.00, DATETIME('now'), 'Analakely');
+
+-- Exemple de transfert (15 000 Ar)
+INSERT INTO transfert (id_transfert, id_operation, envoyeur_transfert, recepteur_transfert, montant_transfert, date_transfert, lieu_transfert) VALUES
+(1, 1, 1, 2, 15000.00, DATETIME('now'), 'Mobile App');
+
+-- Exemple de gain associé au transfert (Tranche 4 = 200 Ar)
+INSERT INTO gain (id_gain, id_operation, id_transfert, id_retrait, montant_gain, date_gain) VALUES
+(1, 1, 1, NULL, 200.00, DATETIME('now'));
