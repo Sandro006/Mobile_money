@@ -122,7 +122,8 @@ INSERT INTO frais (id_frais, id_bareme, montant_frais, date_frais) VALUES
 
 -- Utilisateurs de test
 INSERT INTO utilisateur (id_utilisateur, nom_utilisateur, numero_utilisateur, id_prefixe, solde_utilisateur) VALUES
-(1, 'Jean Rabe', '0331234567', 2, 50000.00);
+(1, 'Jean Rabe', '0331234567', 1, 50000.00),
+(2, 'Rabe Rado', '0331234568', 2, 50000.00);
 
 -- Exemple de dépôt
 
