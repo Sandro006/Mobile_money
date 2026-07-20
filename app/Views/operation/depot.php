@@ -13,7 +13,7 @@
 <!-- Barre de Navigation identique à l'accueil -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
     <div class="container">
-        <a class="navbar-brand fw-bold" href="/client/dashboard">e-Money</a>
+        <a class="navbar-brand fw-bold" href="/client">e-Money</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -72,7 +72,7 @@
 
                     <!-- Boutons d'action -->
                     <div class="d-flex justify-content-between align-items-center">
-                        <a href="/client/dashboard" class="text-decoration-none text-secondary"><i class="bi bi-arrow-left"></i> Retour</a>
+                        <a href="/client" class="text-decoration-none text-secondary"><i class="bi bi-arrow-left"></i> Retour</a>
                         <button type="submit" class="btn btn-success px-4 fw-bold">Confirmer le dépôt</button>
                     </div>
 
