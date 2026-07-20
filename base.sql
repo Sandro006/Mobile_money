@@ -1,8 +1,10 @@
 
+
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE Operateur(
     id INT PRIMARY KEY,
+    libelle VARCHAR(50),
     nom VARCHAR(50),
     mdp VARCHAR(100),
     UNIQUE(nom)
@@ -85,7 +87,7 @@ CREATE TABLE frais (
 CREATE TABLE type_gain(
     id INT PRIMARY KEY,
     libelle VARCHAR(50)  -- 'Interne' ou 'Inter-Operateur'
-)
+);
 CREATE TABLE gain (
     id_gain INT PRIMARY KEY,
     id_operation INT,
@@ -165,7 +167,10 @@ SELECT
 FROM transfert t;
 
 -- =============================== DONNÉES DE TEST ===============================
--- Types d'opérations
+INSERT INTO Operateur (id, libelle, nom, mdp) VALUES
+(1, 'Orange Madagascar', 'Orange', 'orange123'),
+(2, 'Telma Madagascar', 'Telma', 'telma123');
+
 INSERT INTO operation (id_operation, description_operation) VALUES
 (1, 'Transfert'),
 (2, 'Dépôt'),
@@ -175,6 +180,21 @@ INSERT INTO operation (id_operation, description_operation) VALUES
 INSERT INTO prefixe (id_prefixe, num_prefixe) VALUES
 (1, '033'),
 (2, '037');
+UPDATE prefixe SET id_operateur = 1 WHERE id_prefixe = 1;
+UPDATE prefixe SET id_operateur = 1 WHERE id_prefixe = 1;
+
+INSERT INTO prefixe(id_prefixe, num_prefixe, id_operateur) VALUES
+(3, '034',2),
+(4,'038',2)
+-- Insertion des types de gains
+INSERT INTO type_gain(id, libelle) VALUES 
+(1, 'Interne'),
+(2, 'Inter-Operateur');
+
+
+INSERT INTO configuration_interop (id_config, id_operateur, taux_commission_autre_operateur) VALUES
+(1, 1, 2.00),
+(2, 2, 2.50);
 
 -- Insertion du barème (Table bareme)
 INSERT INTO bareme (id_bareme, min_bareme, max_bareme) VALUES
