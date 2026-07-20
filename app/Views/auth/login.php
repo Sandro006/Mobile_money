@@ -37,7 +37,7 @@
         <button type="submit">Se connecter</button>
     </form>
 
-    <a href="/">Voir la liste des utilisateurs</a>
+    <a href="/">Retour au choix de côté</a>
 </div>
 </body>
 </html>

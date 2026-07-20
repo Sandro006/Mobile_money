@@ -27,9 +27,9 @@
                         <tr>
                             <th>ID</th>
                             <th>Nom</th>
-                            <th>Total envoyé (€)</th>
-                            <th>Total reçu (€)</th>
-                            <th>Solde (€)</th>
+                            <th>Total envoyé (Ar)</th>
+                            <th>Total reçu (Ar)</th>
+                            <th>Solde (Ar)</th>
                             <th>Statut</th>
                         </tr>
                     </thead>

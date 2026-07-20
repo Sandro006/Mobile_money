@@ -14,8 +14,7 @@
 <body>
     <?= view('layouts/navbar') ?>
     <div class="container mt-4">
-        <h1 class="mb-4">Liste des préfixes</h1>
-      <?php print_r(session()->get()); ?>
+        <h1 class="mb-4">Préfixes de l'opérateur : <?= esc($operateur_nom) ?></h1>
 
         <?php if (session()->getFlashdata('success')) : ?>
             <div class="alert alert-success alert-dismissible fade show" role="alert">

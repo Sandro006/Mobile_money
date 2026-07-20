@@ -9,30 +9,8 @@
 </head>
 <body class="bg-light">
 
-<!-- Barre de Navigation -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/client">e-Money</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link active" href="/client">Accueil</a></li>
-                <li class="nav-item"><a class="nav-link" href="/operation/page-depot">Faire un Dépôt</a></li>
-                <li class="nav-item"><a class="nav-link" href="/operation/page-retrait">Faire un Retrait</a></li>
-                <li class="nav-item"><a class="nav-link" href="/operation/page-transfert">Faire un Transfert</a></li>
-                <li class="nav-item"><a class="nav-link" href="/client/historique">Historique</a></li>
-            </ul>
-            <div class="navbar-nav align-items-center">
-                <span class="nav-item text-light me-3">
-                    <i class="bi bi-person"></i> <?= esc($nom ?? 'Client') ?>
-                </span>
-                <a class="btn btn-danger btn-sm" href="/logout">Se déconnecter</a>
-            </div>
-        </div>
-    </div>
-</nav>
+<?= view('layouts/navbar_cli') ?>
+
 
 <div class="container">
     <div class="row g-4">
@@ -65,7 +43,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php if (!empty($historique) && is_array($historique)): ?>
+<?php if (!empty($historique) && is_array($historique)): ?>
                                 <?php foreach ($historique as $tx): ?>
                                     <tr>
                                         <td>
@@ -108,6 +86,147 @@
         </div>
     </div>
 </div>
+
+<!-- ========== MODALE DE REÇU / FACTURE ========== -->
+<?php $recu = session()->getFlashdata('recu'); ?>
+<?php if ($recu): ?>
+<div class="modal fade" id="modalRecu" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- En-tête du ticket -->
+            <div class="modal-header bg-<?= esc($recu['couleur'] ?? 'primary') ?> text-white border-0 py-3">
+                <div class="text-center w-100">
+                    <i class="bi <?= esc($recu['icone'] ?? 'bi-receipt') ?> fs-1 d-block mb-1"></i>
+                    <h5 class="fw-bold mb-0"><?= esc($recu['type']) ?></h5>
+                    <small class="opacity-75">Reçu de transaction</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 mt-2 me-2" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body p-4 bg-white">
+                <!-- Informations du client -->
+                <div class="text-center mb-3 pb-2 border-bottom border-2 border-light">
+                    <strong class="small text-uppercase text-muted">e-Money</strong>
+                    <div class="fw-bold"><?= esc($recu['nom'] ?? '') ?></div>
+                    <small class="text-muted"><?= esc($recu['numero'] ?? '') ?></small>
+                </div>
+
+                <!-- Détails de l'opération -->
+                <div class="small">
+                    <!-- Ligne : Date -->
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Date</span>
+                        <span><?= esc($recu['date']) ?></span>
+                    </div>
+                    <!-- Ligne : Lieu -->
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Lieu</span>
+                        <span><?= esc($recu['lieu'] ?? '-') ?></span>
+                    </div>
+
+                    <?php if ($recu['type'] === 'Dépôt'): ?>
+                        <!-- ===== DEPOT ===== -->
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between fw-bold text-success">
+                            <span>Montant déposé</span>
+                            <span>+ <?= number_format($recu['montant'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+
+                    <?php elseif (strpos($recu['type'], 'Retrait') !== false): ?>
+                        <!-- ===== RETRAIT ===== -->
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Montant demandé</span>
+                            <span><?= number_format($recu['montant_demande'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Frais de barème</span>
+                            <span class="text-danger">- <?= number_format($recu['frais_brut'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+                        <?php if (!empty($recu['commission']) && $recu['commission'] > 0): ?>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Commission inter-opérateur</span>
+                            <span class="text-danger">- <?= number_format($recu['commission'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+                        <?php endif; ?>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between fw-bold <?= $recu['frais_inclus'] ? 'text-danger' : '' ?>">
+                            <span><?= $recu['frais_inclus'] ? 'Total débité' : 'Montant net reçu' ?></span>
+                            <span><?= number_format($recu['montant'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+                        <?php if ($recu['frais_inclus']): ?>
+                        <div class="d-flex justify-content-between fw-bold text-success mt-1">
+                            <span>Montant net reçu</span>
+                            <span><?= number_format($recu['montant_demande'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+                        <?php endif; ?>
+
+                    <?php elseif (strpos($recu['type'], 'Transfert') !== false): ?>
+                        <!-- ===== TRANSFERT ===== -->
+                        <hr class="my-2">
+                        <?php if ($recu['sous_type'] === 'simple'): ?>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Destinataire</span>
+                            <span class="fw-bold"><?= esc($recu['destinataire_nom'] ?? '') ?></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Téléphone</span>
+                            <span><?= esc($recu['destinataire_tel'] ?? '') ?></span>
+                        </div>
+                        <?php else: ?>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Nombre de bénéficiaires</span>
+                            <span class="fw-bold"><?= (int)$recu['nb_destinataires'] ?></span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Part par personne</span>
+                            <span><?= number_format($recu['montant_unitaire'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+                        <?php endif; ?>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Montant total envoyé</span>
+                            <span><?= number_format($recu['montant'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-muted">Frais d'envoi</span>
+                            <span class="text-danger">- <?= number_format($recu['frais_totaux'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+                        <hr class="my-2">
+                        <div class="d-flex justify-content-between fw-bold text-danger">
+                            <span>Total débité</span>
+                            <span><?= number_format($recu['montant'] + $recu['frais_totaux'], 2, ',', ' ') ?> Ar</span>
+                        </div>
+                    <?php endif; ?>
+
+                    <!-- Nouveau solde -->
+                    <hr class="my-2">
+                    <div class="d-flex justify-content-between small">
+                        <span class="text-muted">Nouveau solde disponible</span>
+                        <span class="fw-bold text-<?= esc($recu['couleur'] ?? 'primary') ?>"><?= number_format($recu['nouveau_solde'] ?? 0, 2, ',', ' ') ?> Ar</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pied de la modale -->
+            <div class="modal-footer border-0 justify-content-center bg-light py-3">
+                <button type="button" class="btn btn-<?= esc($recu['couleur'] ?? 'primary') ?> px-4 fw-bold" data-bs-dismiss="modal">
+                    <i class="bi bi-check-circle me-1"></i> Fermer
+                </button>
+                <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
+                    <i class="bi bi-printer me-1"></i> Télécharger
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const modalRecu = new bootstrap.Modal(document.getElementById('modalRecu'));
+    modalRecu.show();
+});
+</script>
+<?php endif; ?>
 
 <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
 </body>

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<![CDATA[<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -71,8 +71,7 @@
                         </tfoot>
                     </table>
                 </div>
-            </div> <!-- CORRECTION: Fermeture de .card-body -->
-        </div> <!-- CORRECTION: Fermeture de .card -->
+        </div>
 
         <!-- ============================================================ -->
         <!-- TABLEAU 2 : COMMISSIONS INTER-OPÉRATEUR -->
@@ -103,7 +102,9 @@
                                         <td><?= esc($t['lieu']) ?></td>
                                         <td><?= number_format($t['montant'], 2, ',', ' ') ?></td>
                                         <td><?= number_format($t['taux_commission'], 2, ',', ' ') ?> %</td>
-                                        <td><?= number_format($t['commission_calculee'], 2, ',', ' ') ?></td>
+                                        <td>
+                                            <?= number_format($t['commission_calculee'], 2, ',', ' ') ?>
+                                        </td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else : ?>
@@ -120,13 +121,12 @@
                         </tfoot>
                     </table>
                 </div>
-            </div> <!-- CORRECTION: Fermeture de .card-body -->
-        </div> <!-- CORRECTION: Fermeture de .card -->
+        </div>
 
         <!-- ============================================================ -->
         <!-- RÉCAPITULATIF GÉNÉRAL -->
         <!-- ============================================================ -->
-        <div class="row mt-4 mb-4">
+        <div class="row mt-4">
             <div class="col-md-4">
                 <div class="card text-white bg-success mb-3">
                     <div class="card-header">Gains internes</div>
@@ -134,9 +134,7 @@
                         <h5 class="card-title"><?= number_format($totalGainsInternes, 2, ',', ' ') ?> Ar</h5>
                         <p class="card-text">Frais de base perçus sur toutes les opérations (dépôts, retraits, transferts).</p>
                     </div>
-                </div> <!-- CORRECTION: Fermeture de .card -->
-            </div> <!-- CORRECTION: Fermeture de .col-md-4 -->
-
+            </div>
             <div class="col-md-4">
                 <div class="card text-white bg-danger mb-3">
                     <div class="card-header">Commissions inter-opérateur</div>
@@ -144,9 +142,7 @@
                         <h5 class="card-title"><?= number_format($totalCommissions, 2, ',', ' ') ?> Ar</h5>
                         <p class="card-text">Commissions perçues sur les transferts vers d'autres opérateurs.</p>
                     </div>
-                </div> <!-- CORRECTION: Fermeture de .card -->
-            </div> <!-- CORRECTION: Fermeture de .col-md-4 -->
-
+            </div>
             <div class="col-md-4">
                 <div class="card text-white bg-info mb-3">
                     <div class="card-header">Total général</div>
@@ -154,14 +150,11 @@
                         <h5 class="card-title"><?= number_format($totalGeneral, 2, ',', ' ') ?> Ar</h5>
                         <p class="card-text">Somme des gains internes et commissions inter-opérateur.</p>
                     </div>
-                </div> <!-- CORRECTION: Fermeture de .card -->
-            </div> <!-- CORRECTION: Fermeture de .col-md-4 -->
-        </div> <!-- CORRECTION: Fermeture de .row -->
+            </div>
 
         <a href="<?= site_url('/') ?>" class="btn btn-secondary">Retour</a>
-    </div> <!-- Fermeture de .container -->
-
+    </div>
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
 </body>
-
 </html>
+]]>

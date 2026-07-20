@@ -30,11 +30,11 @@
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <h5 class="card-title">Barème #<?= $bareme['id_bareme'] ?></h5>
-                <p><strong>Min :</strong> <?= number_format($bareme['min_bareme'], 2, ',', ' ') ?> €</p>
-                <p><strong>Max :</strong> <?= number_format($bareme['max_bareme'], 2, ',', ' ') ?> €</p>
+                <p><strong>Min :</strong> <?= number_format($bareme['min_bareme'], 2, ',', ' ') ?> Ar</p>
+                <p><strong>Max :</strong> <?= number_format($bareme['max_bareme'], 2, ',', ' ') ?> Ar</p>
                 <p><strong>Montant actuel :</strong>
                     <?php if ($bareme['montant_frais'] !== null) : ?>
-                        <span class="badge bg-success"><?= number_format($bareme['montant_frais'], 2, ',', ' ') ?> €</span>
+                        <span class="badge bg-success"><?= number_format($bareme['montant_frais'], 2, ',', ' ') ?> Ar</span>
                     <?php else : ?>
                         <span class="badge bg-secondary">Non défini</span>
                     <?php endif; ?>
@@ -48,7 +48,7 @@
                     <?= csrf_field() ?>
 
                     <div class="mb-3">
-                        <label for="montant_frais" class="form-label">Nouveau montant des frais (€)</label>
+                        <label for="montant_frais" class="form-label">Nouveau montant des frais (Ar)</label>
                         <input type="number" step="0.01" min="0" class="form-control" id="montant_frais" name="montant_frais" value="<?= old('montant_frais', $bareme['montant_frais']) ?>" required>
                     </div>
 

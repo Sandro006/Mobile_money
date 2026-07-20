@@ -23,7 +23,7 @@
                 <p><strong>ID :</strong> <?= $utilisateur['id_utilisateur'] ?></p>
                 <p><strong>Nom :</strong> <?= esc($utilisateur['nom_utilisateur']) ?></p>
                 <p><strong>Numéro :</strong> <?= esc($utilisateur['numero_utilisateur']) ?></p>
-                <p><strong>Solde actuel :</strong> <span class="badge bg-success"><?= number_format($utilisateur['solde_utilisateur'], 2, ',', ' ') ?> €</span></p>
+                <p><strong>Solde actuel :</strong> <span class="badge bg-success"><?= number_format($utilisateur['solde_utilisateur'], 2, ',', ' ') ?> Ar</span></p>
             </div>
         </div>
 
@@ -39,9 +39,9 @@
                             <th>Sens</th>
                             <th>Date</th>
                             <th>Lieu</th>
-                            <th>Montant (€)</th>
+                            <th>Montant (Ar)</th>
                             <th>Autre partie</th>
-                            <th>Frais (€)</th>
+                            <th>Frais (Ar)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -80,7 +80,7 @@
             </div>
 
             <div class="alert alert-success">
-                <strong>Total des frais (gains) pour cet utilisateur :</strong> <?= number_format($totalFrais, 2, ',', ' ') ?> €
+                <strong>Total des frais (gains) pour cet utilisateur :</strong> <?= number_format($totalFrais, 2, ',', ' ') ?> Ar
             </div>
         <?php endif; ?>
 

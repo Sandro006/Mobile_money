@@ -17,7 +17,10 @@ class PrefixeController extends BaseController
    
     public function index()
     {
-        $data['prefixes'] = $this->prefixeModel->findAll();
+        // Filtrer les préfixes par l'opérateur connecté
+        $operateurId = session()->get('operateur_id');
+        $data['prefixes'] = $this->prefixeModel->where('id_operateur', $operateurId)->findAll();
+        $data['operateur_nom'] = session()->get('operateur_libelle');
         return view('operateur/prefixe/index', $data);
     }
 
@@ -39,7 +42,8 @@ class PrefixeController extends BaseController
         }
 
         $this->prefixeModel->save([
-            'num_prefixe' => $this->request->getPost('num_prefixe'),
+            'num_prefixe'   => $this->request->getPost('num_prefixe'),
+            'id_operateur'  => session()->get('operateur_id'),
         ]);
 
         return redirect()->to('/prefixe')->with('success', 'Préfixe ajouté avec succès.');

@@ -44,11 +44,6 @@
                     </a>
                 </div>
             </div>
-
-            <div class="text-muted small">
-                Version 1.0 &copy; <?= date('Y') ?> &middot; Développé par Sandro & Ivo
-            </div>
-
         </div>
     </div>
 </div>

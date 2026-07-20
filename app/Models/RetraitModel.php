@@ -39,6 +39,7 @@ class RetraitModel extends Model
     {
         $row = $this->db->table('configuration_interop')
                         ->where('id_operateur', $idOperateur)
+                        ->orderBy('id_config', 'DESC')  // Dernier taux en date
                         ->get()
                         ->getRowArray();
 

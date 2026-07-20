@@ -9,23 +9,8 @@
 </head>
 <body class="bg-light">
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand fw-bold" href="/client/dashboard">e-Money</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-                <li class="nav-item"><a class="nav-link" href="/client">Accueil</a></li>
-                <li class="nav-item"><a class="nav-link" href="/operation/page-depot">Faire un Dépôt</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/operation/page-retrait">Faire un Retrait</a></li>
-                <li class="nav-item"><a class="nav-link" href="/operation/page-transfert">Faire un Transfert</a></li>
-                <li class="nav-item"><a class="nav-link" href="/client/historique">Historique</a></li>
-            </ul>
-        </div>
-    </div>
-</nav>
+    <?= view('layouts/navbar_cli') ?>
+
 
 <div class="container">
     <div class="row justify-content-center">
@@ -67,11 +52,27 @@
                     <!-- Choix de l'opérateur concerné -->
                     <div class="mb-3 d-none" id="bloc_choix_operateur">
                         <label for="id_operateur_concerne" class="form-label fw-bold text-primary">Sélectionnez l'opérateur du Kiosque</label>
-                        <select id="id_operateur_concerne" name="id_operateur_concerne" class="form-select form-select-lg">
-                            <option value="" disabled selected>-- Choisir un opérateur --</option>
-                            <option value="1" data-taux="2.00">Orange Madagascar (2%)</option>
-                            <option value="2" data-taux="2.50">Telma Madagascar (2.5%)</option>
-                        </select>
+                            <select id="id_operateur_concerne" name="id_operateur_concerne" class="form-select form-select-lg">
+                                <option value="" disabled selected>-- Choisir un opérateur --</option>
+                                
+                                <?php if (!empty($operateurs)): ?>
+                                    <?php foreach ($operateurs as $op): ?>
+                                        <?php 
+                                            // Récupération sécurisée du taux (prend 0 si NULL)
+                                            $tauxBrut = (float)($op['taux'] ?? 0);
+                                            // Formatage propre pour l'affichage textuel (ex: 30,00)
+                                            $tauxAffiche = number_format($tauxBrut, 2, ',', ' '); 
+                                        ?>
+                                        <option value="<?= esc($op['id']) ?>" data-taux="<?= esc($tauxBrut) ?>">
+                                            <?= esc($op['libelle'] ?? $op['nom']) ?> (<?= $tauxAffiche ?>%)
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="" disabled>Aucun opérateur disponible</option>
+                                <?php endif; ?>
+                                
+                            </select>
+
                     </div>
 
                     <!-- Champ Montant -->
@@ -164,7 +165,10 @@ document.addEventListener("DOMContentLoaded", function() {
         if (csrfToken) formData.append(document.querySelector('input[name^="csrf_"]').name, csrfToken);
 
         fetch('/api/calculer-frais-retrait', { method: 'POST', body: formData })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) throw new Error('Erreur HTTP ' + response.status);
+            return response.json();
+        })
         .then(data => {
             if (data.succes) {
                 recapTicket.classList.remove('d-none');
@@ -176,7 +180,8 @@ document.addEventListener("DOMContentLoaded", function() {
                 document.getElementById('recap_commission').innerText = "+ " + formatMoney(data.commission);
                 document.getElementById('recap_total').innerText = formatMoney(data.total_debite);
             }
-        });
+        })
+        .catch(error => console.error('Erreur API frais retrait:', error));
     }
 
     radiosType.forEach(elem => elem.addEventListener("change", function(e) {

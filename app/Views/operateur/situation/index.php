@@ -16,6 +16,8 @@
     <div class="container mt-4">
         <h1 class="mb-4">Situation des utilisateurs</h1>
 
+        <a href="<?= site_url('situation/create') ?>" class="btn btn-primary mb-3">Ajouter un utilisateur </a>
+
         <div class="table-responsive">
             <table class="table table-bordered table-hover">
                 <thead>

@@ -54,10 +54,10 @@ class CompensationController extends BaseController
                 ), 0) AS total_recu
             FROM operateur op
             LEFT JOIN prefixe p_env ON p_env.id_operateur = op.id
-            LEFT JOIN utilisateur u_env ON u_env.id_prefixe = p_env.id_prefixe
+            LEFT JOIN utilisateur u_env ON u_env.id_operateur = p_env.id_operateur
             LEFT JOIN transfert t ON t.envoyeur_transfert = u_env.id_utilisateur
             LEFT JOIN utilisateur u_rec ON u_rec.id_utilisateur = t.recepteur_transfert
-            LEFT JOIN prefixe p_rec ON p_rec.id_prefixe = u_rec.id_prefixe
+            LEFT JOIN prefixe p_rec ON p_rec.id_operateur = u_rec.id_operateur
             LEFT JOIN operateur op_rec ON op_rec.id = p_rec.id_operateur
             LEFT JOIN operateur op_env ON op_env.id = p_env.id_operateur
             GROUP BY op.id

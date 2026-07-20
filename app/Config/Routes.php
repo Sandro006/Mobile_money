@@ -31,6 +31,7 @@ $routes->get('/situation/detail/(:num)', [SituationController::class, 'detail'])
 $routes->get('/login', 'LoginController::index');
 $routes->post('/login', 'LoginController::submit');
 $routes->get('/logout', 'LoginController::logout');
+$routes->get('/deconnexion','OperateurAuthController::logout');
 
 // Zone client (protégée)
 $routes->get('/client', 'ClientController::index');
@@ -57,7 +58,15 @@ $routes->get('operateur/auth', 'OperateurAuthController::index');
 $routes->post('operateur/auth', 'OperateurAuthController::login');
 $routes->get('operateur/logout', 'OperateurAuthController::logout');
 
+// Inserer utilisateur
+$routes->get('situation/create', 'SituationController::pageinserer');
+$routes->post('situation/sauvegarder', 'SituationController::sauvegarder');
+
 $routes->get('/commission', [CommissionController::class, 'index']);
 $routes->post('/commission/update', [CommissionController::class, 'update']);
 
 $routes->get('/compensation', [CompensationController::class, 'index']);
+
+// ============ API AJAX (Calcul frais en temps réel) ============
+$routes->post('api/calculer-frais-retrait', 'ApiController::calculerFraisRetrait');
+$routes->post('api/calculer-frais-transfert', 'ApiController::calculerFraisTransfert');

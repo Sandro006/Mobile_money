@@ -20,12 +20,33 @@ class OperationController extends BaseController
     /**
      * Affiche la page de formulaire pour un retrait
      */
-    public function pageRetrait()
+   public function pageRetrait()
     {
-        if (empty(session()->get('logged_in'))) {
+        $session = session();
+        if (empty($session->get('logged_in'))) {
             return redirect()->to('/login');
         }
-        return view('operation/retrait');
+
+        $db = \Config\Database::connect();
+        
+        // Requête pour récupérer les opérateurs avec les taux à 20% et 30% mis à jour
+        $operateurs = $db->query("
+            SELECT o.id, o.nom AS libelle, c.taux_commission_autre_operateur AS taux
+            FROM Operateur o
+            LEFT JOIN configuration_interop c ON o.id = c.id_operateur
+            WHERE c.id_config = (
+                SELECT id_config 
+                FROM configuration_interop 
+                WHERE id_operateur = o.id 
+                ORDER BY created_at DESC, id_config DESC 
+                LIMIT 1
+            ) OR c.id_config IS NULL
+        ")->getResultArray();
+
+        // On envoie la variable $operateurs à la vue du formulaire
+        return view('operation/retrait', [
+            'operateurs' => $operateurs
+        ]);
     }
 
     /**
@@ -48,11 +69,32 @@ class OperationController extends BaseController
             return redirect()->to('/operation/page-depot');
         }
 
+        $utilisateurModel = new \App\Models\UtilisateurModel();
+        $utilisateur = $utilisateurModel->find($idUtilisateur);
+        $soldeAvant = is_object($utilisateur) ? $utilisateur->solde_utilisateur : $utilisateur['solde_utilisateur'];
+
         $depotModel = new DepotModel();
         $succes = $depotModel->executerDepot($idUtilisateur, (float)$montant, $lieu);
 
         if ($succes) {
-            $session->setFlashdata('succes', 'Le dépôt de ' . number_format($montant, 2, ',', ' ') . ' Ar a été effectué avec succès !');
+            // Recharger l'utilisateur pour obtenir le nouveau solde
+            $utilisateur = $utilisateurModel->find($idUtilisateur);
+            $nouveauSolde = is_object($utilisateur) ? $utilisateur->solde_utilisateur : $utilisateur['solde_utilisateur'];
+            $nom = is_object($utilisateur) ? $utilisateur->nom_utilisateur : $utilisateur['nom_utilisateur'];
+            $numero = is_object($utilisateur) ? $utilisateur->numero_utilisateur : $utilisateur['numero_utilisateur'];
+
+            $session->setFlashdata('succes', 'Dépôt effectué avec succès !');
+            $session->setFlashdata('recu', [
+                'type'           => 'Dépôt',
+                'montant'        => (float)$montant,
+                'lieu'           => $lieu,
+                'date'           => date('Y-m-d H:i:s'),
+                'nouveau_solde'  => $nouveauSolde,
+                'nom'            => $nom,
+                'numero'         => $numero,
+                'icone'          => 'bi-arrow-down-left-square text-success',
+                'couleur'        => 'success'
+            ]);
             return redirect()->to('/client');
         } else {
             $session->setFlashdata('erreur', 'Une erreur technique est survenue sur la base de données.');
@@ -158,11 +200,31 @@ class OperationController extends BaseController
         );
 
         if ($succes) {
-            $msgSucces = 'Retrait validé avec succès ! ';
-            $msgSucces .= 'Montant net remis au guichet : ' . number_format($montantRetraitFinal, 2, ',', ' ') . ' Ar. ';
-            $msgSucces .= 'Frais totaux appliqués : ' . number_format($totalFrais, 2, ',', ' ') . ' Ar.';
+            // Recharger l'utilisateur pour obtenir le nouveau solde
+            $utilisateur = $utilisateurModel->find($idUtilisateur);
+            $nouveauSolde = is_object($utilisateur) ? $utilisateur->solde_utilisateur : $utilisateur['solde_utilisateur'];
+            $nom = is_object($utilisateur) ? $utilisateur->nom_utilisateur : $utilisateur['nom_utilisateur'];
+            $numero = is_object($utilisateur) ? $utilisateur->numero_utilisateur : $utilisateur['numero_utilisateur'];
 
-            $session->setFlashdata('succes', $msgSucces);
+            $typeRetrait = ($typeOperateur === 'interop') ? 'Retrait inter-opérateur' : 'Retrait';
+
+            $session->setFlashdata('succes', 'Retrait effectué avec succès !');
+            $session->setFlashdata('recu', [
+                'type'            => $typeRetrait,
+                'montant'         => (float)$montantRetraitFinal,
+                'montant_demande' => (float)$montant,
+                'frais_brut'      => (float)$fraisBrut,
+                'commission'      => (float)$commission,
+                'total_frais'     => (float)$totalFrais,
+                'frais_inclus'    => $fraisInclus,
+                'lieu'            => $lieu,
+                'date'            => date('Y-m-d H:i:s'),
+                'nouveau_solde'   => $nouveauSolde,
+                'nom'             => $nom,
+                'numero'          => $numero,
+                'icone'           => 'bi-arrow-up-right-square text-danger',
+                'couleur'         => 'danger'
+            ]);
             return redirect()->to('/client');
         } else {
             $session->setFlashdata('erreur', "Une erreur SQL d'écriture est survenue lors de la finalisation.");
@@ -299,11 +361,48 @@ public function transfert()
 
     // 8. Traitement du message de confirmation de sortie
     if ($db->transStatus() !== false) {
+        // Recharger l'utilisateur pour obtenir le nouveau solde
+        $envoyeur = $utilisateurModel->find($idEnvoyeur);
+        $nouveauSolde = is_object($envoyeur) ? $envoyeur->solde_utilisateur : $envoyeur['solde_utilisateur'];
+        $nom = is_object($envoyeur) ? $envoyeur->nom_utilisateur : $envoyeur['nom_utilisateur'];
+        $numero = is_object($envoyeur) ? $envoyeur->numero_utilisateur : $envoyeur['numero_utilisateur'];
+
         if ($modeTransfert === 'simple') {
-            $msgSucces = 'Transfert de ' . number_format($montantGlobal, 2, ',', ' ') . ' Ar envoyé avec succès à ' . esc($destinatairesValides[0]['data']['nom_utilisateur']) . ' (Frais : ' . number_format($coutTotalFraisGlobal, 2, ',', ' ') . ' Ar).';
+            $msgSucces = 'Transfert effectué avec succès !';
+            $session->setFlashdata('recu', [
+                'type'            => 'Transfert',
+                'sous_type'       => 'simple',
+                'montant'         => (float)$montantGlobal,
+                'montant_unitaire'=> (float)$montantUnitaire,
+                'nb_destinataires'=> $nbDestinataires,
+                'destinataire_nom'=> esc($destinatairesValides[0]['data']['nom_utilisateur']),
+                'destinataire_tel'=> esc($destinatairesValides[0]['data']['numero_utilisateur']),
+                'frais_totaux'    => (float)$coutTotalFraisGlobal,
+                'lieu'            => $lieu,
+                'date'            => date('Y-m-d H:i:s'),
+                'nouveau_solde'   => $nouveauSolde,
+                'nom'             => $nom,
+                'numero'          => $numero,
+                'icone'           => 'bi-send text-warning',
+                'couleur'         => 'warning'
+            ]);
         } else {
-            $msgSucces = "Envoi multiple exécuté avec succès vers {$nbDestinataires} numéros !<br>";
-            $msgSucces .= "Chacun a reçu : " . number_format($montantUnitaire, 2, ',', ' ') . " Ar. Frais totaux : " . number_format($coutTotalFraisGlobal, 2, ',', ' ') . " Ar.";
+            $msgSucces = "Envoi multiple effectué avec succès !";
+            $session->setFlashdata('recu', [
+                'type'            => 'Transfert groupé',
+                'sous_type'       => 'multiple',
+                'montant'         => (float)$montantGlobal,
+                'montant_unitaire'=> (float)$montantUnitaire,
+                'nb_destinataires'=> $nbDestinataires,
+                'frais_totaux'    => (float)$coutTotalFraisGlobal,
+                'lieu'            => $lieu,
+                'date'            => date('Y-m-d H:i:s'),
+                'nouveau_solde'   => $nouveauSolde,
+                'nom'             => $nom,
+                'numero'          => $numero,
+                'icone'           => 'bi-people-fill text-success',
+                'couleur'         => 'success'
+            ]);
         }
         
         $session->setFlashdata('succes', $msgSucces);

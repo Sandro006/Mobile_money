@@ -34,8 +34,8 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Min (€)</th>
-                        <th>Max (€)</th>
+                        <th>Min (Ar)</th>
+                        <th>Max (Ar)</th>
                         <th>Montant frais (dernier)</th>
                         <th>Action</th>
                     </tr>

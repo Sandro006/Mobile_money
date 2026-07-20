@@ -11,9 +11,9 @@ class ConfigurationInteropModel extends Model
     protected $useAutoIncrement = true;
     protected $returnType       = 'array';
     protected $allowedFields    = [
-        'id_config',
         'id_operateur',
-        'taux_commission_autre_operateur'
+        'taux_commission_autre_operateur',
+        'created_at',
     ];
 }
 
