@@ -14,7 +14,26 @@ class UtilisateurModel extends Model
         'id_prefixe',
         'solde_utilisateur'
     ];
+
+
     function getAll(){
         return $this->findAll();
     }
+
+
+public function getHistoriqueUtilisateur(int $idUtilisateur, ?int $limit = null): array
+        {
+            $builder = $this->db->table('vue_historique_operations')
+                                ->where('id_utilisateur', $idUtilisateur)
+                                ->orderBy('date_operation', 'DESC');
+
+            // Si une limite est précisée, on l'applique à la requête
+            if ($limit !== null) {
+                $builder->limit($limit);
+            }
+
+            return $builder->get()->getResultArray();
+        }
+
+
 }
