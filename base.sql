@@ -229,3 +229,4 @@ INSERT INTO utilisateur (id_utilisateur, nom_utilisateur, numero_utilisateur, id
 
 -- Exemple de dépôt
 
+ALTER TABLE operateur ADD COLUMN commission_pourcent DECIMAL(5,2) DEFAULT 0.00

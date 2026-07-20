@@ -4,6 +4,7 @@ use CodeIgniter\Router\RouteCollection;
 use App\Controllers\BaremeController;
 use App\Controllers\GainController;
 use App\Controllers\SituationController;
+use App\Controllers\CommissionController;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
@@ -54,3 +55,6 @@ $routes->get('client/historique', 'ClientController::historique');
 $routes->get('operateur/auth', 'OperateurAuthController::index');
 $routes->post('operateur/auth', 'OperateurAuthController::login');
 $routes->get('operateur/logout', 'OperateurAuthController::logout');
+
+$routes->get('/commission', [CommissionController::class, 'index']);
+$routes->post('/commission/update', [CommissionController::class, 'update']);

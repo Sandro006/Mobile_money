@@ -69,77 +69,33 @@ class SituationController extends BaseController
         // - Dépôts où il est l'utilisateur
 
         $sql = "
-            SELECT 
-                id_transfert AS id,
-                'transfert' AS type,
-                date_transfert AS date,
-                lieu_transfert AS lieu,
-                montant_transfert AS montant,
-                'Envoyé' AS sens,  -- Pour transfert, on déterminera plus tard
-                envoyeur.nom_utilisateur AS autre_nom,
-                envoyeur.numero_utilisateur AS autre_numero,
-                (
-                    SELECT montant_frais 
-                    FROM frais 
-                    WHERE id_bareme = (
-                        SELECT id_bareme 
-                        FROM bareme 
-                        WHERE min_bareme <= transfert.montant_transfert 
-                        AND max_bareme >= transfert.montant_transfert 
-                        LIMIT 1
-                    )
-                    ORDER BY date_frais DESC 
-                    LIMIT 1
-                ) AS frais
-            FROM transfert
-            JOIN utilisateur envoyeur ON envoyeur.id_utilisateur = transfert.envoyeur_transfert
-            JOIN utilisateur recepteur ON recepteur.id_utilisateur = transfert.recepteur_transfert
-            WHERE transfert.envoyeur_transfert = $id OR transfert.recepteur_transfert = $id
-
-            UNION
-
-            SELECT 
-                id_retrait AS id,
-                'retrait' AS type,
-                date_retrait AS date,
-                lieu_retrait AS lieu,
-                montant_retrait AS montant,
-                'Retrait' AS sens,
-                NULL AS autre_nom,
-                NULL AS autre_numero,
-                (
-                    SELECT montant_frais 
-                    FROM frais 
-                    WHERE id_bareme = (
-                        SELECT id_bareme 
-                        FROM bareme 
-                        WHERE min_bareme <= retrait.montant_retrait 
-                        AND max_bareme >= retrait.montant_retrait 
-                        LIMIT 1
-                    )
-                    ORDER BY date_frais DESC 
-                    LIMIT 1
-                ) AS frais
-            FROM retrait
-            WHERE retrait.id_utilisateur_retrait = $id
-
-            UNION
-
-            SELECT 
-                id_depot AS id,
-                'depot' AS type,
-                date_depot AS date,
-                lieu_depot AS lieu,
-                montant_depot AS montant,
-                'Dépôt' AS sens,
-                NULL AS autre_nom,
-                NULL AS autre_numero,
-                NULL AS frais
-            FROM depot
-            WHERE depot.id_utilisateur_depot = $id
-
-            ORDER BY date DESC
-        ";
+        SELECT 
+        id_transfert AS id,
+        'transfert' AS type,
+        date_transfert AS date,
+        lieu_transfert AS lieu,
+        montant_transfert AS montant,
+        'Envoyé' AS sens,
+        envoyeur.nom_utilisateur AS autre_nom,
+        envoyeur.numero_utilisateur AS autre_numero,
+        -- Frais de base
+        (SELECT montant_frais FROM frais WHERE id_bareme = (
+            SELECT id_bareme FROM bareme 
+            WHERE min_bareme <= transfert.montant_transfert AND max_bareme >= transfert.montant_transfert LIMIT 1
+        ) ORDER BY date_frais DESC LIMIT 1) AS frais_base,
+        -- Commission externe (si opérateurs différents)
+        CASE 
+            WHEN (SELECT id_operateur FROM prefixe WHERE id_prefixe = envoyeur.id_prefixe) 
+                 <> (SELECT id_operateur FROM prefixe WHERE id_prefixe = recepteur.id_prefixe)
+            THEN 
+                (SELECT commission_pourcent FROM operateur WHERE id = (SELECT id_operateur FROM prefixe WHERE id_prefixe = envoyeur.id_prefixe)) / 100 * transfert.montant_transfert
+            ELSE 0
+        END AS commission_externe
+    FROM transfert
+    JOIN utilisateur envoyeur ON envoyeur.id_utilisateur = transfert.envoyeur_transfert
+    JOIN utilisateur recepteur ON recepteur.id_utilisateur = transfert.recepteur_transfert
+    WHERE transfert.envoyeur_transfert = $id OR transfert.recepteur_transfert = $id
+    ";
 
         $query = $db->query($sql);
         $transactions = $query->getResultArray();
