@@ -81,6 +81,60 @@ CREATE TABLE gain (
     FOREIGN KEY (id_retrait) REFERENCES retrait(id_retrait)
 );
 
+-- ================================= VUE ========================================
+CREATE VIEW vue_historique_operations AS
+
+-- 1. Récupération des Dépôts
+SELECT 
+    d.id_depot AS id_transaction,
+    d.date_depot AS date_operation,
+    'Dépôt' AS type_operation,
+    d.id_utilisateur_depot AS id_utilisateur,
+    d.montant_depot AS montant,
+    0.00 AS frais, -- Pas de frais sur les dépôts d'après le barème
+    d.lieu_depot AS lieu
+FROM depot d
+
+UNION ALL
+
+-- 2. Récupération des Retraits
+SELECT 
+    r.id_retrait AS id_transaction,
+    r.date_retrait AS date_operation,
+    'Retrait' AS type_operation,
+    r.id_utilisateur_retrait AS id_utilisateur,
+    r.montant_retrait AS montant,
+    COALESCE(g.montant_gain, 0.00) AS frais, -- Récupération des frais via la table gain
+    r.lieu_retrait AS lieu
+FROM retrait r
+LEFT JOIN gain g ON r.id_retrait = g.id_retrait
+
+UNION ALL
+
+-- 3. Récupération des Transferts (Côté Envoyeur : Sortie d'argent)
+SELECT 
+    t.id_transfert AS id_transaction,
+    t.date_transfert AS date_operation,
+    'Transfert Envoyé' AS type_operation,
+    t.envoyeur_transfert AS id_utilisateur,
+    t.montant_transfert AS montant,
+    COALESCE(g.montant_gain, 0.00) AS frais, -- L'envoyeur paye les frais du transfert
+    t.lieu_transfert AS lieu
+FROM transfert t
+LEFT JOIN gain g ON t.id_transfert = g.id_transfert
+
+UNION ALL
+
+-- 4. Récupération des Transferts (Côté Récepteur : Entrée d'argent)
+SELECT 
+    t.id_transfert AS id_transaction,
+    t.date_transfert AS date_operation,
+    'Transfert Reçu' AS type_operation,
+    t.recepteur_transfert AS id_utilisateur,
+    t.montant_transfert AS montant,
+    0.00 AS frais, -- Le récepteur ne paye aucun frais
+    t.lieu_transfert AS lieu
+FROM transfert t;
 
 -- =============================== DONNÉES DE TEST ===============================
 -- Types d'opérations
@@ -122,7 +176,8 @@ INSERT INTO frais (id_frais, id_bareme, montant_frais, date_frais) VALUES
 
 -- Utilisateurs de test
 INSERT INTO utilisateur (id_utilisateur, nom_utilisateur, numero_utilisateur, id_prefixe, solde_utilisateur) VALUES
-(1, 'Jean Rabe', '0331234567', 2, 50000.00);
+(1, 'Jean Rabe', '0331234567', 1, 50000.00),
+(2, 'Rabe Rado', '0331234568', 2, 50000.00);
 
 -- Exemple de dépôt
 
