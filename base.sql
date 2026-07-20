@@ -91,9 +91,7 @@ INSERT INTO operation (id_operation, description_operation) VALUES
 
 -- Préfixes d'opérateurs
 INSERT INTO prefixe (id_prefixe, num_prefixe) VALUES
-(1, '032'),
 (2, '033'),
-(3, '034'),
 (4, '037');
 
 -- Insertion du barème (Table bareme)
