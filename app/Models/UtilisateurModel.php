@@ -12,6 +12,7 @@ class UtilisateurModel extends Model
         'nom_utilisateur',
         'numero_utilisateur',
         'id_prefixe',
+        'id_operateur',
         'solde_utilisateur'
     ];
 

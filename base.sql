@@ -27,10 +27,8 @@ CREATE TABLE utilisateur (
     id_utilisateur INT PRIMARY KEY,
     nom_utilisateur VARCHAR(50),
     numero_utilisateur VARCHAR(20),
-    id_prefixe INT,
     id_operateur INT, -- Ajout essentiel pour identifier l'opérateur du client
     solde_utilisateur DECIMAL(10,2),
-    FOREIGN KEY (id_prefixe) REFERENCES prefixe(id_prefixe),
     FOREIGN KEY (id_operateur) REFERENCES Operateur(id)
 );
 
@@ -112,57 +110,57 @@ CREATE TABLE configuration_interop (
 
 
 -- ================================= VUE ========================================
+DROP VIEW IF EXISTS vue_historique_operations;
+
 CREATE VIEW vue_historique_operations AS
 
--- 1. Récupération des Dépôts
+-- 1. Récupération des Dépôts (Inchangé)
 SELECT 
     d.id_depot AS id_transaction,
     d.date_depot AS date_operation,
     'Dépôt' AS type_operation,
     d.id_utilisateur_depot AS id_utilisateur,
     d.montant_depot AS montant,
-    0.00 AS frais, -- Pas de frais sur les dépôts d'après le barème
+    0.00 AS frais,
     d.lieu_depot AS lieu
 FROM depot d
 
 UNION ALL
 
--- 2. Récupération des Retraits
+-- 2. Récupération des Retraits (CORRIGÉ : Somme des gains par retrait)
 SELECT 
     r.id_retrait AS id_transaction,
     r.date_retrait AS date_operation,
     'Retrait' AS type_operation,
     r.id_utilisateur_retrait AS id_utilisateur,
     r.montant_retrait AS montant,
-    COALESCE(g.montant_gain, 0.00) AS frais, -- Récupération des frais via la table gain
+    COALESCE((SELECT SUM(g.montant_gain) FROM gain g WHERE g.id_retrait = r.id_retrait), 0.00) AS frais,
     r.lieu_retrait AS lieu
 FROM retrait r
-LEFT JOIN gain g ON r.id_retrait = g.id_retrait
 
 UNION ALL
 
--- 3. Récupération des Transferts (Côté Envoyeur : Sortie d'argent)
+-- 3. Récupération des Transferts - Côté Envoyeur (CORRIGÉ : Somme des gains par transfert)
 SELECT 
     t.id_transfert AS id_transaction,
     t.date_transfert AS date_operation,
     'Transfert Envoyé' AS type_operation,
     t.envoyeur_transfert AS id_utilisateur,
     t.montant_transfert AS montant,
-    COALESCE(g.montant_gain, 0.00) AS frais, -- L'envoyeur paye les frais du transfert
+    COALESCE((SELECT SUM(g.montant_gain) FROM gain g WHERE g.id_transfert = t.id_transfert), 0.00) AS frais,
     t.lieu_transfert AS lieu
 FROM transfert t
-LEFT JOIN gain g ON t.id_transfert = g.id_transfert
 
 UNION ALL
 
--- 4. Récupération des Transferts (Côté Récepteur : Entrée d'argent)
+-- 4. Récupération des Transferts - Côté Récepteur (Inchangé)
 SELECT 
     t.id_transfert AS id_transaction,
     t.date_transfert AS date_operation,
     'Transfert Reçu' AS type_operation,
     t.recepteur_transfert AS id_utilisateur,
     t.montant_transfert AS montant,
-    0.00 AS frais, -- Le récepteur ne paye aucun frais
+    0.00 AS frais,
     t.lieu_transfert AS lieu
 FROM transfert t;
 
@@ -180,12 +178,15 @@ INSERT INTO operation (id_operation, description_operation) VALUES
 INSERT INTO prefixe (id_prefixe, num_prefixe) VALUES
 (1, '033'),
 (2, '037');
+
+-- Correction : Correction de la double ligne inutile
 UPDATE prefixe SET id_operateur = 1 WHERE id_prefixe = 1;
-UPDATE prefixe SET id_operateur = 1 WHERE id_prefixe = 1;
+UPDATE prefixe SET id_operateur = 1 WHERE id_prefixe = 2; -- Supposé pour le préfixe 2
 
 INSERT INTO prefixe(id_prefixe, num_prefixe, id_operateur) VALUES
-(3, '034',2),
-(4,'038',2)
+(3, '034', 2),
+(4, '038', 2); 
+
 -- Insertion des types de gains
 INSERT INTO type_gain(id, libelle) VALUES 
 (1, 'Interne'),
@@ -223,10 +224,15 @@ INSERT INTO frais (id_frais, id_bareme, montant_frais, date_frais) VALUES
 (10, 10, 3000.00, DATETIME('now'));
 
 -- Utilisateurs de test
-INSERT INTO utilisateur (id_utilisateur, nom_utilisateur, numero_utilisateur, id_prefixe, solde_utilisateur) VALUES
+INSERT INTO utilisateur (id_utilisateur, nom_utilisateur, numero_utilisateur, id_operateur, solde_utilisateur) VALUES
 (1, 'Jean Rabe', '0331234567', 1, 50000.00),
-(2, 'Rabe Rado', '0331234568', 2, 50000.00);
+(2, 'Rabe Rado', '0341234568', 2, 50000.00),
+(3, 'Jean Princio', '0331234569', 1, 20000.00);
 
--- Exemple de dépôt
+UPDATE utilisateur SET id_operateur = 1 WHERE id_utilisateur = 1; -- Jean Rabe chez Orange
+UPDATE utilisateur SET id_operateur = 2 WHERE id_utilisateur = 2; -- Rabe Rado chez Telma
+
+
+ INSERT INTO utilisateur (id_utilisateur, nom_utilisateur, numero_utilisateur, id_operateur, solde_utilisateur) VALUES (4, 'Jean bae', '0331234570', 1, 20000.00);
 
 ALTER TABLE operateur ADD COLUMN commission_pourcent DECIMAL(5,2) DEFAULT 0.00

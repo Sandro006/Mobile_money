@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace App\Models;
 
@@ -9,18 +9,10 @@ class TransfertModel extends Model
     protected $table = 'transfert';
     protected $primaryKey = 'id_transfert';
     protected $allowedFields = [
-        'id_operation',
-        'envoyeur_transfert',
-        'recepteur_transfert',
-        'montant_transfert',
-        'date_transfert',
-        'lieu_transfert'
+        'id_operation', 'envoyeur_transfert', 'recepteur_transfert', 'montant_transfert', 'date_transfert', 'lieu_transfert'
     ];
 
-    /**
-     * Récupère le montant des frais selon le barème
-     */
-    public function calculerFrais(float $montant): float
+    public function calculerFraisTransfert(float $montant): float
     {
         $resultat = $this->db->table('bareme b')
                        ->select('f.montant_frais')
@@ -33,9 +25,6 @@ class TransfertModel extends Model
         return $resultat ? (float)$resultat['montant_frais'] : 0.00;
     }
 
-    /**
-     * Valide l'existence d'un destinataire et retourne ses informations
-     */
     public function chargerDestinataire(string $numero)
     {
         return $this->db->table('utilisateur')
@@ -45,63 +34,47 @@ class TransfertModel extends Model
     }
 
     /**
-     * Exécute le transfert d'argent de manière atomique et sécurisée
+     * Effectue un virement unitaire (Ligne transfert, Ligne gain, Ajustement des 2 soldes)
+     * Cette fonction sera exécutée au sein d'une transaction parente gérée par le contrôleur
      */
-    public function executerTransfert(int $idEnvoyeur, int $idRecepteur, float $montant, float $frais, string $lieu): bool
+    public function executerVirementUnitaire(int $idEnvoyeur, int $idRecepteur, float $montantUnitaire, float $fraisUnitaire, int $idOpEnvoyeur, int $idOpRecepteur, string $lieu, string $dateActuelle): void
     {
-        $this->db->transStart();
+        // 1. Prochain ID de Transfert (MAX + 1)
+        $dernierTrans = $this->db->table('transfert')->selectMax('id_transfert')->get()->getRowArray();
+        $idTransfert = ($dernierTrans['id_transfert'] ?? 0) + 1;
 
-        $dateActuelle = date('Y-m-d H:i:s');
-
-        // Étape A : Génération manuelle d'un ID unique pour le transfert
-        $dernierTransfert = $this->db->table('transfert')->selectMax('id_transfert')->get()->getRowArray();
-        $idTransfert = ($dernierTransfert['id_transfert'] ?? 0) + 1;
-
-        // 1. Insertion du transfert
+        // 2. Écriture de la fiche du transfert
         $this->db->table('transfert')->insert([
-            'id_transfert'        => $idTransfert,
-            'id_operation'        => 1, // ID correspondant au type 'Transfert'
-            'envoyeur_transfert'  => $idEnvoyeur,
-            'recepteur_transfert' => $idRecepteur,
-            'montant_transfert'   => $montant,
-            'date_transfert'      => $dateActuelle,
-            'lieu_transfert'      => $lieu
+            'id_transfert'       => $idTransfert,
+            'id_operation'       => 1,
+            'envoyeur_transfert' => $idEnvoyeur,
+            'recepteur_transfert'=> $idRecepteur,
+            'montant_transfert'  => $montantUnitaire,
+            'date_transfert'     => $dateActuelle,
+            'lieu_transfert'     => $lieu
         ]);
 
-        // 2. Insertion dans la table Gain (Frais facturés à l'envoyeur)
-        if ($frais > 0) {
+        // 3. Écriture de la fiche de gain (Frais d'envoi)
+        if ($fraisUnitaire > 0) {
+            $typeGainTrans = ($idOpEnvoyeur === $idOpRecepteur) ? 1 : 2; // 1 = Interne, 2 = Inter-Opérateur
+            
             $dernierGain = $this->db->table('gain')->selectMax('id_gain')->get()->getRowArray();
             $idGain = ($dernierGain['id_gain'] ?? 0) + 1;
 
             $this->db->table('gain')->insert([
-                'id_gain'      => $idGain,
-                'id_operation' => 1,
-                'id_transfert' => $idTransfert,
-                'id_retrait'   => null,
-                'montant_gain' => $frais,
-                'date_gain'    => $dateActuelle
+                'id_gain'               => $idGain,
+                'id_operation'          => 1,
+                'id_transfert'          => $idTransfert,
+                'id_retrait'            => null,
+                'montant_gain'          => $fraisUnitaire,
+                'id_type_gain'          => $typeGainTrans,
+                'id_operateur_concerne' => $idOpEnvoyeur,
+                'date_gain'             => $dateActuelle
             ]);
         }
 
-        // 3. Mise à jour des soldes des utilisateurs
-        $utilisateurModel = new \App\Models\UtilisateurModel();
-
-        // Débit de l'envoyeur (Montant + Frais)
-        $envoyeur = $utilisateurModel->find($idEnvoyeur);
-        $soldeEnvoyeurActuel = is_object($envoyeur) ? $envoyeur->solde_utilisateur : $envoyeur['solde_utilisateur'];
-        $utilisateurModel->update($idEnvoyeur, [
-            'solde_utilisateur' => $soldeEnvoyeurActuel - ($montant + $frais)
-        ]);
-
-        // Crédit du récepteur (Montant net uniquement)
-        $recepteur = $utilisateurModel->find($idRecepteur);
-        $soldeRecepteurActuel = is_object($recepteur) ? $recepteur->solde_utilisateur : $recepteur['solde_utilisateur'];
-        $utilisateurModel->update($idRecepteur, [
-            'solde_utilisateur' => $soldeRecepteurActuel + $montant
-        ]);
-
-        $this->db->transComplete();
-
-        return $this->db->transStatus() !== false;
+        // 4. Mouvements comptables (Débit Envoyeur / Crédit Récepteur)
+        $this->db->table('utilisateur')->where('id_utilisateur', $idEnvoyeur)->decrement('solde_utilisateur', ($montantUnitaire + $fraisUnitaire));
+        $this->db->table('utilisateur')->where('id_utilisateur', $idRecepteur)->increment('solde_utilisateur', $montantUnitaire);
     }
 }
