@@ -9,11 +9,6 @@ class Home extends BaseController
 {
     public function index(): string
     {
-        $utilisateurModel = new UtilisateurModel();
-
-        $utilisateurs = $utilisateurModel->getAll();
-
-        return view('index', ['utilisateurs' => $utilisateurs]);
-
+        return view('index'); 
     }
 }
