@@ -91,8 +91,8 @@ INSERT INTO operation (id_operation, description_operation) VALUES
 
 -- Préfixes d'opérateurs
 INSERT INTO prefixe (id_prefixe, num_prefixe) VALUES
-(2, '033'),
-(4, '037');
+(1, '033'),
+(2, '037');
 
 -- Insertion du barème (Table bareme)
 INSERT INTO bareme (id_bareme, min_bareme, max_bareme) VALUES
@@ -122,18 +122,7 @@ INSERT INTO frais (id_frais, id_bareme, montant_frais, date_frais) VALUES
 
 -- Utilisateurs de test
 INSERT INTO utilisateur (id_utilisateur, nom_utilisateur, numero_utilisateur, id_prefixe, solde_utilisateur) VALUES
-(1, 'Jean Rabe', '0331234567', 2, 50000.00),
-(2, 'Alice Ranaivo', '0347654321', 3, 5000.00),
-(3, 'Michel Toky', '0320011223', 1, 150000.00);
+(1, 'Jean Rabe', '0331234567', 2, 50000.00);
 
 -- Exemple de dépôt
-INSERT INTO depot (id_depot, id_operation, id_utilisateur_depot, montant_depot, date_depot, lieu_depot) VALUES
-(1, 2, 1, 20000.00, DATETIME('now'), 'Analakely');
 
--- Exemple de transfert (15 000 Ar)
-INSERT INTO transfert (id_transfert, id_operation, envoyeur_transfert, recepteur_transfert, montant_transfert, date_transfert, lieu_transfert) VALUES
-(1, 1, 1, 2, 15000.00, DATETIME('now'), 'Mobile App');
-
--- Exemple de gain associé au transfert (Tranche 4 = 200 Ar)
-INSERT INTO gain (id_gain, id_operation, id_transfert, id_retrait, montant_gain, date_gain) VALUES
-(1, 1, 1, NULL, 200.00, DATETIME('now'));

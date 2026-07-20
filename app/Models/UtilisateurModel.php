@@ -14,4 +14,7 @@ class UtilisateurModel extends Model
         'id_prefixe',
         'solde_utilisateur'
     ];
+    function getAll(){
+        return $this->findAll();
+    }
 }
