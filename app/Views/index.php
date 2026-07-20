@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Gestion des Utilisateurs</title>
-    <!-- Intégration de Bootstrap pour un rendu propre et rapide -->
 </head>
 <body class="bg-light">
 
