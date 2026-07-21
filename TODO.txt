@@ -23,3 +23,17 @@
 
 ## Reste à faire
 - [ ] Tester le dashboard avec le serveur
+
+
+## alea
+- Un Client choix la pourcentage de l'epargne 
+- Lors du transfert recu le % du somme va dans l'epargne et l'autre en 
+
+- [] Dans les models and base
+    - [x] Créer une table epargne
+    - [x]Créer le model correspondant
+    - [x] Créer un page où inserer le pourcentage d'epargne
+    - [x]Créer une fonction qui recupere le pourcentage
+    - [x]Créer une fonction pour inserer le pourcentage
+- [x] Créer une controller
+    - une fonction qui appele   

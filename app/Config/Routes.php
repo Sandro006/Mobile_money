@@ -69,6 +69,9 @@ $routes->post('/commission/update', [CommissionController::class, 'update']);
 
 $routes->get('/compensation', [CompensationController::class, 'index']);
 
+$routes->get('epargne','EpargneController::index');
+$routes->post('/poucentagesauver','EpargneController::Sauver');
+
 // ============ API AJAX (Calcul frais en temps réel) ============
 $routes->post('api/calculer-frais-retrait', 'ApiController::calculerFraisRetrait');
 $routes->post('api/calculer-frais-transfert', 'ApiController::calculerFraisTransfert');

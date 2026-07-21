@@ -52,7 +52,7 @@ class OperateurAuthController extends Controller
             'isOperateurLoggedIn' => true,
         ]);
 
-        return redirect()->to('/operateur/dashboard')->with('success', 'Connexion réussie.');
+        return redirect()->to('/prefixe')->with('success', 'Connexion réussie.');
     }
 
     public function logout()

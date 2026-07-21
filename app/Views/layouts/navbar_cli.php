@@ -12,6 +12,7 @@
                 <li class="nav-item"><a class="nav-link" href="/operation/page-retrait">Faire un Retrait</a></li>
                 <li class="nav-item"><a class="nav-link" href="/operation/page-transfert">Faire un Transfert</a></li>
                 <li class="nav-item"><a class="nav-link" href="/client/historique">Historique</a></li>
+                <li class="nav-item"><a class="nav-link" href="/epargne">Epargne Configuration</a></li>
             </ul>
             <div class="navbar-nav align-items-center">
                 <span class="nav-item text-light me-3">

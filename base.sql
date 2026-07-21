@@ -107,6 +107,22 @@ CREATE TABLE configuration_interop (
 );
 
 
+CREATE TABLE pourcentage_epargne(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_utilisateur INT,
+    pourcentage DECIMAL(5,2),
+    FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+
+);
+DROP TABLE Epargne;
+CREATE TABLE Epargne(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_utilisateur INT,
+    Solde DECIMAL(10,2),
+    Uptade_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+);
+
 -- ================================= VUE ========================================
 DROP VIEW IF EXISTS vue_historique_operations;
 
@@ -161,6 +177,83 @@ SELECT
     0.00 AS frais,
     t.lieu_transfert AS lieu
 FROM transfert t;
+
+-- ============================================================
+-- VUE : Toutes les opérations pour le dashboard (par opérateur)
+--       Évite les parenthèses et ORDER BY/LIMIT dans UNION ALL
+-- ============================================================
+DROP VIEW IF EXISTS vue_dashboard_all_operations;
+
+CREATE VIEW vue_dashboard_all_operations AS
+SELECT 
+    u.id_operateur,
+    'Dépôt' AS type_operation,
+    d.id_depot AS id_transaction,
+    d.montant_depot AS montant,
+    d.date_depot AS date_operation,
+    u.nom_utilisateur,
+    u.id_utilisateur
+FROM depot d
+JOIN utilisateur u ON d.id_utilisateur_depot = u.id_utilisateur
+
+UNION ALL
+
+SELECT 
+    u.id_operateur,
+    'Retrait' AS type_operation,
+    r.id_retrait AS id_transaction,
+    r.montant_retrait AS montant,
+    r.date_retrait AS date_operation,
+    u.nom_utilisateur,
+    u.id_utilisateur
+FROM retrait r
+JOIN utilisateur u ON r.id_utilisateur_retrait = u.id_utilisateur
+
+UNION ALL
+
+SELECT 
+    u.id_operateur,
+    'Transfert' AS type_operation,
+    t.id_transfert AS id_transaction,
+    t.montant_transfert AS montant,
+    t.date_transfert AS date_operation,
+    (SELECT nom_utilisateur FROM utilisateur WHERE id_utilisateur = t.envoyeur_transfert) AS nom_utilisateur,
+    t.envoyeur_transfert AS id_utilisateur
+FROM transfert t
+JOIN utilisateur u ON t.envoyeur_transfert = u.id_utilisateur;
+
+-- ============================================================
+-- VUE : Tous les gains par opérateur (pour dashboard)
+--       Agrège les gains issus des retraits et transferts
+-- ============================================================
+DROP VIEW IF EXISTS vue_dashboard_all_gains;
+
+CREATE VIEW vue_dashboard_all_gains AS
+-- Gains provenant des retraits
+SELECT 
+    u.id_operateur,
+    g.montant_gain,
+    g.date_gain,
+    'retrait' AS source_type,
+    g.id_retrait AS source_id
+FROM gain g
+JOIN retrait r ON g.id_retrait = r.id_retrait
+JOIN utilisateur u ON r.id_utilisateur_retrait = u.id_utilisateur
+WHERE g.id_retrait IS NOT NULL
+
+UNION ALL
+
+-- Gains provenant des transferts (côté envoyeur)
+SELECT 
+    u.id_operateur,
+    g.montant_gain,
+    g.date_gain,
+    'transfert' AS source_type,
+    g.id_transfert AS source_id
+FROM gain g
+JOIN transfert t ON g.id_transfert = t.id_transfert
+JOIN utilisateur u ON t.envoyeur_transfert = u.id_utilisateur
+WHERE g.id_transfert IS NOT NULL;
 
 -- ============================================================
 -- VUE : Gains / opérations (transferts, retraits, dépôts)
@@ -315,3 +408,6 @@ INSERT INTO configuration_interop (id_operateur, taux_commission_autre_operateur
 (1, 2.00, '2024-01-01 10:00:00'),
 (1, 2.50, '2024-06-15 14:30:00'),
 (2, 2.50, '2024-01-01 10:00:00');
+
+
+INSERT INTO Epargne(id,id_utilisateur, pourcentage, )
