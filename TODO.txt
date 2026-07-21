@@ -1,0 +1,25 @@
+# 📝 TODO - Améliorations Interface Opérateur
+
+## [x] ÉTAPE 1 : Dashboard opérateur (NOUVEAU)
+- [x] Créer app/Controllers/DashboardController.php
+- [x] Créer app/Views/operateur/dashboard/index.php avec Chart.js
+
+## [x] ÉTAPE 2 : Amélioration des Layouts
+- [x] Modifier app/Views/layouts/navbar.php (recherche globale, style sidebar, icônes)
+- [x] Modifier app/Views/layouts/main.php (footer, structure flex)
+
+## [x] ÉTAPE 3 : Routes & Redirections
+- [x] Modifier app/Config/Routes.php (route dashboard)
+- [x] Modifier app/Controllers/OperateurAuthController.php (redirect vers dashboard)
+
+## [x] ÉTAPE 4 : Export CSV + améliorations UI
+- [x] Modifier app/Views/operateur/prefixe/index.php (export CSV + style)
+- [x] Modifier app/Views/operateur/bareme/index.php (export CSV + style)
+- [x] Modifier app/Views/operateur/gain/index.php (export CSV + cartes recap)
+- [x] Modifier app/Views/operateur/situation/index.php (recherche + export CSV)
+- [x] Modifier app/Views/operateur/compensation/index.php (export CSV + icônes statut)
+- [x] Modifier app/Views/operateur/commission/index.php (export CSV historique)
+- [x] Ajouter recherche dans SituationController
+
+## Reste à faire
+- [ ] Tester le dashboard avec le serveur

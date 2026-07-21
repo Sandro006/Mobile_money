@@ -30,12 +30,25 @@ class SituationController extends BaseController
             return redirect()->to('/operateur/auth')->with('error', 'Veuillez vous connecter en tant qu\'opérateur.');
         }
 
-        // Les utilisateurs ont directement id_operateur, pas besoin de passer par les préfixes
-        $utilisateurs = $this->utilisateurModel
-                             ->where('id_operateur', $idOperateur)
-                             ->findAll();
+        // Support de la recherche
+        $search = $this->request->getGet('search');
+        
+        if ($search) {
+            $utilisateurs = $this->utilisateurModel
+                                 ->where('id_operateur', $idOperateur)
+                                 ->groupStart()
+                                     ->like('nom_utilisateur', $search)
+                                     ->orLike('numero_utilisateur', $search)
+                                 ->groupEnd()
+                                 ->findAll();
+        } else {
+            $utilisateurs = $this->utilisateurModel
+                                 ->where('id_operateur', $idOperateur)
+                                 ->findAll();
+        }
 
         $data['utilisateurs'] = $utilisateurs;
+        $data['search'] = $search;
         return view('operateur/situation/index', $data);
     }
     /**

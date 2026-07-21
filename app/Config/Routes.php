@@ -6,9 +6,11 @@ use App\Controllers\GainController;
 use App\Controllers\SituationController;
 use App\Controllers\CommissionController;
 use App\Controllers\CompensationController;
+use App\Controllers\DashboardController;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
+$routes->get('/operateur/dashboard', [DashboardController::class, 'index']);
 
 $routes->get('/prefixe', [PrefixeController::class, 'index']);
 $routes->get('/prefixe/create', [PrefixeController::class, 'create']);

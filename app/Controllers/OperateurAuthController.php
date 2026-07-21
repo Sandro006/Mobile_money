@@ -9,9 +9,9 @@ class OperateurAuthController extends Controller
 {
     public function index()
     {
-        // Si déjà connecté, on redirige directement
+        // Si déjà connecté, on redirige directement vers le dashboard
         if (session()->get('isOperateurLoggedIn')) {
-            return redirect()->to('/prefixe');
+            return redirect()->to('/operateur/dashboard');
         }
 
         return view('operateur/auth');
@@ -52,7 +52,7 @@ class OperateurAuthController extends Controller
             'isOperateurLoggedIn' => true,
         ]);
 
-        return redirect()->to('/prefixe')->with('success', 'Connexion réussie.');
+        return redirect()->to('/operateur/dashboard')->with('success', 'Connexion réussie.');
     }
 
     public function logout()
