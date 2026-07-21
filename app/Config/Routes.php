@@ -7,6 +7,7 @@ use App\Controllers\SituationController;
 use App\Controllers\CommissionController;
 use App\Controllers\CompensationController;
 use App\Controllers\DashboardController;
+use App\Controllers\OperationController;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'Home::index');
@@ -72,3 +73,5 @@ $routes->get('/compensation', [CompensationController::class, 'index']);
 // ============ API AJAX (Calcul frais en temps réel) ============
 $routes->post('api/calculer-frais-retrait', 'ApiController::calculerFraisRetrait');
 $routes->post('api/calculer-frais-transfert', 'ApiController::calculerFraisTransfert');
+
+$routes->post('frais' , 'OperationController::calculerFrais')

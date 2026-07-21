@@ -9,7 +9,7 @@ class TransfertModel extends Model
     protected $table = 'transfert';
     protected $primaryKey = 'id_transfert';
     protected $allowedFields = [
-        'id_operation', 'envoyeur_transfert', 'recepteur_transfert', 'montant_transfert', 'date_transfert', 'lieu_transfert'
+        'id_operation', 'envoyeur_transfert', 'recepteur_transfert', 'montant_transfert', 'date_transfert', 'lieu_transfert','promortion_pourcent'
     ];
 
     public function calculerFraisTransfert(float $montant): float
@@ -24,6 +24,8 @@ class TransfertModel extends Model
 
         return $resultat ? (float)$resultat['montant_frais'] : 0.00;
     }
+
+   
 
     public function chargerDestinataire(string $numero)
     {

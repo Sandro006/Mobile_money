@@ -35,12 +35,14 @@ CREATE TABLE transfert (
     envoyeur_transfert INT,
     recepteur_transfert INT,
     montant_transfert DECIMAL(10,2),
-    date_transfert DATETIME DEFAULT CURRENT_TIMESTAMP, -- Optionnel : ajout d'une date auto
+    date_transfert DATETIME DEFAULT CURRENT_TIMESTAMP, 
     lieu_transfert VARCHAR(100),
     FOREIGN KEY (id_operation) REFERENCES operation(id_operation),
     FOREIGN KEY (envoyeur_transfert) REFERENCES utilisateur(id_utilisateur),
     FOREIGN KEY (recepteur_transfert) REFERENCES utilisateur(id_utilisateur)
 );
+ALTER TABLE transfert ADD COLUMN promotion_pourcent DECIMAL(5,2) DEFAULT 0.00;
+
 
 CREATE TABLE depot (
     id_depot INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -315,3 +317,17 @@ INSERT INTO configuration_interop (id_operateur, taux_commission_autre_operateur
 (1, 2.00, '2024-01-01 10:00:00'),
 (1, 2.50, '2024-06-15 14:30:00'),
 (2, 2.50, '2024-01-01 10:00:00');
+
+
+create table operateur_pourcentage (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_operateur INTEGER NOT NULL,
+    pourcentage REAL NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN kEY (id_operateur) REFERENCES Operateur(id)
+);
+
+INSERT into operateur_pourcentage (id_operateur , pourcentage) VALUES (1,50);
+
+
+

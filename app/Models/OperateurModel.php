@@ -14,4 +14,6 @@ class OperateurModel extends Model
         'commission_pourcent',  
   
     ];
+
+    
 }

@@ -413,6 +413,26 @@ public function transfert()
     }
 }
 
+public function calculerFrais($idOperateur, $montant)
+{
+    $db =\Config\Database::connect();
+    $ligne = $db->table('operateur_pourcentage')
+    ->where('id_operateur',$idOperateur)
+    ->orderBy('created_at','DESC')
+    ->get()
+    ->getRow();
 
+    if(!$ligne){return 0;}
+return ($montant * $ligne->pourcentage) / 100;
+
+}
+public function calculTotalAvecFrais($idOperateur , $montant)
+{
+    $frais = $this->calculerFrais($idOperateur, $montant);
+    return ['montant' => $montant,
+            'frais' => $frais,
+            'total' => $montant + $frais,
+            ];
+}
 
 }

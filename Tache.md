@@ -288,3 +288,5 @@ php spark serve
 
 
 GIT_AUTHOR_DATE="2026-07-20T17:23:00" GIT_COMMITTER_DATE="2026-07-20T17:23:00" git commit -m "commit de la mort"
+
+Promotion pourcentage transfert vers meme operateur
